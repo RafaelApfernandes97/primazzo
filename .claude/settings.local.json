@@ -11,7 +11,10 @@
       "Bash(xargs kill:*)",
       "Bash(tree:*)",
       "Read(//mnt/c/Users/rafael/Downloads/mongo/backup/**)",
-      "Bash(rsync:*)"
+      "Bash(rsync:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []
