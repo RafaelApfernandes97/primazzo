@@ -1,0 +1,63 @@
+# Node modules
+**/node_modules
+**/npm-debug.log
+**/.npm
+
+# Build outputs
+frontend/dist
+backend/public
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment files (usar variáveis de ambiente do Easypanel)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+server.log
+
+# Testing
+coverage
+.nyc_output
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Claude
+.claude
+
+# Arquivos locais (não necessários na build)
+arquivos/
+root/
+
+# Scripts de teste
+backend/test-*.js
+
+# Lock files (mantemos apenas package-lock.json copiado explicitamente)
+yarn.lock
+pnpm-lock.yaml

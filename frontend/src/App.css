@@ -1,0 +1,819 @@
+.app {
+  height: 100vh; /* fix full viewport height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevent global page scroll */
+}
+
+/* Ensure root/html take full height and no default margins so layout fits viewport */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #128c7e 0%, #075e54 100%);
+  color: white;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.app-header p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-logout {
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.app-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 350px 400px 1fr;
+  gap: 0;
+  height: calc(100vh - 84px);
+  overflow: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+/* Important: allow panel children to shrink and scroll inside the panel
+   when using flex layout. Without min-height:0 the panel can grow and
+   push the outer container, causing a global scrollbar. */
+.panel {
+  min-height: 0;
+}
+
+.panel:last-child {
+  border-right: none;
+}
+
+.panel-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: white;
+}
+
+.panel-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #075e54;
+}
+
+.panel-subtitle {
+  font-size: 13px;
+  color: #667781;
+  margin-top: 8px;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* allow internal scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #128c7e;
+}
+
+/* Filtros de atendimentos */
+.filtros-atendimentos {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.barra-busca-filtros {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-input-inline {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input-inline:focus {
+  border-color: #128c7e;
+}
+
+.btn-calendario {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-calendario:hover {
+  background: #f5f6f6;
+  border-color: #128c7e;
+}
+
+.btn-calendario.active {
+  background: #128c7e;
+  border-color: #128c7e;
+  transform: scale(1.05);
+}
+
+/* Filtro aplicado */
+.filtro-aplicado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #e7f3f1;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #075e54;
+  border: 1px solid #c0ebe3;
+}
+
+.filtro-aplicado span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.btn-limpar-filtro {
+  background: transparent;
+  border: none;
+  color: #075e54;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 5px;
+  margin-left: 10px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.btn-limpar-filtro:hover {
+  opacity: 1;
+}
+
+/* Calendário */
+.calendario-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 10px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendario-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.calendario-select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.calendario-select:hover,
+.calendario-select:focus {
+  border-color: #128c7e;
+}
+
+.calendario-dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.calendario-dias-semana > div {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #667781;
+  padding: 8px 0;
+}
+
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.calendario-dia {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #111b21;
+  font-weight: 500;
+}
+
+.calendario-dia:hover {
+  background: #f5f6f6;
+}
+
+.calendario-dia.outro-mes {
+  color: #c5c5c5;
+  cursor: default;
+}
+
+.calendario-dia.outro-mes:hover {
+  background: transparent;
+}
+
+.calendario-dia.selecionado {
+  background: #128c7e;
+  color: white;
+}
+
+.calendario-dia.selecionado:hover {
+  background: #0f7a68;
+}
+
+.calendario-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid #f0f2f5;
+}
+
+.btn-calendario-acao {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #667781;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-calendario-acao:hover {
+  background: #f5f6f6;
+  border-color: #128c7e;
+  color: #128c7e;
+}
+
+.btn-calendario-acao.primary {
+  background: #128c7e;
+  color: white;
+  border-color: #128c7e;
+}
+
+.btn-calendario-acao.primary:hover {
+  background: #0f7a68;
+  border-color: #0f7a68;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f2f5;
+  transition: background-color 0.2s;
+}
+
+.list-item:hover {
+  background-color: #f5f6f6;
+}
+
+.list-item.active {
+  background-color: #e7f3f1;
+  border-left: 3px solid #128c7e;
+}
+
+.list-item-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #128c7e 0%, #075e54 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111b21;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item-subtitle {
+  font-size: 13px;
+  color: #667781;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  margin-left: 10px;
+}
+
+.badge {
+  background-color: #128c7e;
+  color: white;
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.status-F {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.status-A {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge.status-E {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-badge.status-T {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.mensagens-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Prevent message list from forcing container height */
+.mensagens-list {
+  overflow: auto;
+  max-height: 100%;
+}
+
+/* Style scrollbar lightly for desktop */
+.panel-content::-webkit-scrollbar, .mensagens-list::-webkit-scrollbar {
+  width: 10px;
+}
+.panel-content::-webkit-scrollbar-thumb, .mensagens-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.08);
+  border-radius: 6px;
+}
+
+.mensagem {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.mensagem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mensagem-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #111b21;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+}
+
+.mensagem-meta {
+  font-size: 11px;
+  color: #667781;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Message alignment / bubble styles */
+.mensagens-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mensagem {
+  max-width: 70%;
+  margin-left: 0;
+}
+
+.mensagem.contact {
+  align-self: flex-start;
+  background: white;
+  border: 1px solid #e6e6e6;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.mensagem.user {
+  align-self: flex-end;
+  background: #dcf8c6; /* pastel green like WhatsApp */
+  border: 1px solid #cfeec0;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.mensagem-atendente {
+  font-weight: 600;
+  font-size: 12px;
+  color: #075e54;
+  margin-bottom: 6px;
+}
+
+.mensagem-card-titulo {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mensagem-card-opcoes {
+  padding-left: 18px;
+  margin: 0;
+}
+
+/* Estilos para mídia - Container geral */
+.media-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Estilos para imagens */
+.media-image {
+  display: block;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.media-image:hover {
+  transform: scale(1.02);
+}
+
+.media-caption {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #667781;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.media-caption span {
+  flex: 1;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: white;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.btn-download:hover {
+  background: #0f7a68;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(18, 140, 126, 0.3);
+}
+
+/* Estilos para player de áudio */
+.audio-player {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 400px;
+}
+
+.audio-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.audio-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.audio-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.audio-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111b21;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-size {
+  font-size: 11px;
+  color: #667781;
+  margin-top: 2px;
+}
+
+.audio-element {
+  width: 100%;
+  height: 36px;
+  outline: none;
+}
+
+.audio-element::-webkit-media-controls-panel {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos para vídeo */
+.media-video {
+  display: block;
+  max-width: 480px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: #000;
+}
+
+/* Estilos para arquivos para download */
+.file-download {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 280px;
+  max-width: 400px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.file-download:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #128c7e;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.file-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111b21;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #667781;
+}
+
+.download-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  color: #128c7e;
+}
+
+/* Compatibilidade com código antigo (caso existam referências) */
+.mensagem img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.arquivo-download {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #128c7e;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.arquivo-download:hover {
+  background: #0f7a68;
+}
+
+.mensagem-status {
+  text-transform: capitalize;
+  color: #128c7e;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 15px;
+}
+
+.loading-container p {
+  color: #667781;
+  font-size: 14px;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #667781;
+  font-size: 14px;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px 20px;
+  margin: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .app-container {
+    grid-template-columns: 300px 350px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .panel {
+    min-height: 400px;
+  }
+
+  .app-header h1 {
+    font-size: 20px;
+  }
+}
